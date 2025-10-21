@@ -1,0 +1,64 @@
+{
+  "name": "doekos/shipkit",
+  "description": "A Composer package that gives you tools to ship faster: make:command generator, configurable bootstrapping, and more.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Doekos"
+    }
+  ],
+  "require": {
+    "php": ">=8.4",
+    "illuminate/support": "^12.0"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.25.0",
+    "orchestra/testbench": "^10.6.0",
+    "pestphp/pest": "^3.8.4",
+    "pestphp/pest-plugin-type-coverage": "^3.6.1",
+    "phpstan/phpstan": "^2.1.27",
+    "rector/rector": "^2.1.7",
+    "symfony/var-dumper": "^7.3.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Shipkit\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Shipkit\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Shipkit\\ShipkitServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "pint",
+    "refactor": "rector",
+    "test:lint": "pint --test",
+    "test:unit": "pest --exactly=100",
+    "test:types": "phpstan",
+    "test:refactor": "rector --dry-run",
+    "test": [
+      "@test:unit",
+      "@test:lint",
+      "@test:types",
+      "@test:refactor"
+    ],
+    "fix": [
+      "@lint",
+      "@refactor"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}

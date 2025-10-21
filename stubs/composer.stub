@@ -1,0 +1,18 @@
+{
+    "lint": "pint",
+    "refactor": "rector",
+    "test:lint": "pint --test",
+    "test:unit": "pest --exactly=100",
+    "test:types": "phpstan",
+    "test:refactor": "rector --dry-run",
+    "test": [
+      "@test:unit",
+      "@test:lint",
+      "@test:types",
+      "@test:refactor"
+    ],
+    "fix": [
+      "@lint",
+      "@refactor"
+    ]
+}

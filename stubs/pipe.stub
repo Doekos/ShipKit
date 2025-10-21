@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Closure;
+
+final readonly class {{ class }}
+{
+    /**
+     * Execute the pipe.
+     */
+    public function handle(mixed $payload, Closure $next): mixed
+    {
+        //
+
+        return $next($payload);
+    }
+}

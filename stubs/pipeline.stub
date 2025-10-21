@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Pipeline\Pipeline;
+
+final readonly class {{ class }}
+{
+    /**
+     * The list of pipes the payload will be sent through.
+     *
+     * @var list<class-string>
+     */
+    private array $pipes = [
+        //
+    ];
+
+    public function __construct(private Pipeline $pipeline) {}
+
+    /**
+     * Run the payload through the pipeline.
+     */
+    public function handle(mixed $payload): mixed
+    {
+        return $this->pipeline
+            ->send($payload)
+            ->through($this->pipes)
+            ->thenReturn();
+    }
+}
