@@ -84,3 +84,31 @@ it('uses published stub when available', function (): void {
             '// this is user modified stub'
         );
 });
+
+it('action command is not available when disabled in config', function (): void {
+    $configurable = new Shipkit\Configurables\MakeAction();
+
+    config()->set('shipkit.'.Shipkit\Configurables\MakeAction::class, false);
+
+    expect($configurable->enabled())->toBeFalse();
+});
+
+it('action command is available when enabled in config', function (): void {
+    $configurable = new Shipkit\Configurables\MakeAction();
+
+    config()->set('shipkit.'.Shipkit\Configurables\MakeAction::class, true);
+
+    expect($configurable->enabled())->toBeTrue();
+});
+
+it('make:action command works normally when MakeAction is enabled', function (): void {
+    config()->set('shipkit.'.Shipkit\Configurables\MakeAction::class, true);
+
+    $commands = array_keys(Artisan::all());
+    expect($commands)->toContain('make:action');
+
+    $this->artisan('make:action', ['name' => 'TestEnabledAction'])
+        ->assertSuccessful();
+
+    expect(File::exists(app_path('Actions/TestEnabledAction.php')))->toBeTrue();
+});

@@ -1,7 +1,7 @@
 {
   "preset": "laravel",
   "notPath": [
-    "tests/TestCase.php"
+    "tests/"
   ],
   "rules": {
     "array_push": true,

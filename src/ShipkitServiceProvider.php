@@ -19,6 +19,7 @@ final class ShipkitServiceProvider extends BaseServiceProvider
      * @var list<class-string<Configurable>>
      */
     private array $configurables = [
+        Configurables\MakeAction::class,
         Configurables\ProhibitDestructiveCommands::class,
         Configurables\ShouldBeStrict::class,
         Configurables\Unguard::class,
@@ -30,7 +31,6 @@ final class ShipkitServiceProvider extends BaseServiceProvider
      * @var list<class-string<Command>>
      */
     private array $commandsList = [
-        Commands\MakeActionCommand::class,
         Commands\MakeDtoCommand::class,
         Commands\MakePipeCommand::class,
         Commands\MakePipelineCommand::class,
@@ -52,7 +52,14 @@ final class ShipkitServiceProvider extends BaseServiceProvider
             ->each(fn (Configurable $configurable) => $configurable->configure());
 
         if ($this->app->runningInConsole()) {
-            $this->commands($this->commandsList);
+            $commandsToRegister = $this->commandsList;
+
+            $makeActionConfigurable = $this->app->make(Configurables\MakeAction::class);
+            if ($makeActionConfigurable->enabled()) {
+                $commandsToRegister[] = Commands\MakeActionCommand::class;
+            }
+
+            $this->commands($commandsToRegister);
 
             $this->publishes([
                 __DIR__.'/../stubs' => $this->app->basePath('stubs'),
