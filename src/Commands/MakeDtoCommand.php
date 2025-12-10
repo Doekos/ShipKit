@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Shipkit\Commands;
 
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 
-final class MakeDtoCommand extends GeneratorCommand
+final class MakeDtoCommand extends AbstractModularGeneratorCommand
 {
     /**
      * The name and signature of the console command.
@@ -29,23 +28,6 @@ final class MakeDtoCommand extends GeneratorCommand
      * @var string
      */
     protected $type = 'Dto';
-
-    /**
-     * Execute the console command.
-     *
-     * @return bool|int|null
-     */
-    public function handle()
-    {
-        // Check if the dto already exists
-        if ($this->alreadyExists($this->getNameInput())) {
-            $this->error($this->type.' already exists!');
-
-            return 1;
-        }
-
-        return parent::handle();
-    }
 
     /**
      * Get the name input
@@ -70,33 +52,8 @@ final class MakeDtoCommand extends GeneratorCommand
         return $this->resolveStubPath('/stubs/dto.stub');
     }
 
-    /**
-     * Get default namespace for the class
-     **/
-    protected function getDefaultNamespace($rootNamespace): string
+    protected function subNamespace(): string
     {
-        return $rootNamespace.'\DTOs';
-    }
-
-    /**
-     * Get the destination class path
-     **/
-    protected function getPath($name): string
-    {
-        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
-
-        return app_path(str_replace('\\', '/', $name).'.php');
-    }
-
-    /**
-     * Resolve the fully qualified path to the stub.
-     **/
-    private function resolveStubPath(string $stub): string
-    {
-        $basePath = $this->laravel->basePath(mb_trim($stub, '/'));
-
-        return file_exists($basePath)
-            ? $basePath
-            : __DIR__.'/../../'.$stub;
+        return 'DTOs';
     }
 }
