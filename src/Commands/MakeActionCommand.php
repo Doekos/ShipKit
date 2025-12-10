@@ -4,54 +4,20 @@ declare(strict_types=1);
 
 namespace Shipkit\Commands;
 
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 
-final class MakeActionCommand extends GeneratorCommand
+final class MakeActionCommand extends AbstractModularGeneratorCommand
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    protected $signature = 'make:action
+                            {name : The name of the action}
+                            {--module= : The module to place the action in}';
+
     protected $name = 'make:action';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Create a new action class';
 
-    /**
-     * The type of class being generated.
-     *
-     * @var string
-     */
     protected $type = 'Action';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): ?bool
-    {
-        // First check if the class already exists
-        if ($this->alreadyExists($this->getNameInput())) {
-            $this->error($this->type.' already exists!');
-
-            // Returning true yields an exit code of 1 in Artisan::call
-            return true;
-        }
-
-        // Let the parent perform generation; returning null yields an exit code of 0
-        parent::handle();
-
-        return null;
-    }
-
-    /**
-     * Get the name input.
-     */
     protected function getNameInput(): string
     {
         /** @var string $name */
@@ -64,41 +30,13 @@ final class MakeActionCommand extends GeneratorCommand
             ->toString();
     }
 
-    /**
-     * Get the stub file for the generator.
-     */
     protected function getStub(): string
     {
         return $this->resolveStubPath('/stubs/action.stub');
     }
 
-    /**
-     * Get the default namespace for the class.
-     */
-    protected function getDefaultNamespace($rootNamespace)
+    protected function subNamespace(): string
     {
-        return $rootNamespace.'\Actions';
-    }
-
-    /**
-     * Get the destination class path.
-     */
-    protected function getPath($name)
-    {
-        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
-
-        return app_path(str_replace('\\', '/', $name).'.php');
-    }
-
-    /**
-     * Resolve the fully-qualified path to the stub.
-     */
-    private function resolveStubPath(string $stub): string
-    {
-        $basePath = $this->laravel->basePath(mb_trim($stub, '/'));
-
-        return file_exists($basePath)
-            ? $basePath
-            : __DIR__.'/../../'.$stub;
+        return 'Actions';
     }
 }

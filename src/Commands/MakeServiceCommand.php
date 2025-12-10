@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Shipkit\Commands;
 
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 
-final class MakeServiceCommand extends GeneratorCommand
+final class MakeServiceCommand extends AbstractModularGeneratorCommand
 {
     /**
      * The name and signature of the console command.
@@ -29,25 +28,6 @@ final class MakeServiceCommand extends GeneratorCommand
      * @var string
      */
     protected $type = 'Service';
-
-    /**
-     * Execute the console command.
-     */
-    public function handle(): ?bool
-    {
-        // First check if the class already exists
-        if ($this->alreadyExists($this->getNameInput())) {
-            $this->error($this->type.' already exists!');
-
-            // Returning true yields an exit code of 1 in Artisan::call
-            return true;
-        }
-
-        // Let the parent perform generation; returning null yields an exit code of 0
-        parent::handle();
-
-        return null;
-    }
 
     /**
      * Get the name input.
@@ -72,33 +52,8 @@ final class MakeServiceCommand extends GeneratorCommand
         return $this->resolveStubPath('/stubs/service.stub');
     }
 
-    /**
-     * Get the default namespace for the class.
-     */
-    protected function getDefaultNamespace($rootNamespace): string
+    protected function subNamespace(): string
     {
-        return $rootNamespace.'\Services';
-    }
-
-    /**
-     * Get the destination class path.
-     */
-    protected function getPath($name)
-    {
-        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
-
-        return app_path(str_replace('\\', '/', $name).'.php');
-    }
-
-    /**
-     * Resolve the fully-qualified path to the stub.
-     */
-    private function resolveStubPath(string $stub): string
-    {
-        $basePath = $this->laravel->basePath(mb_trim($stub, '/'));
-
-        return file_exists($basePath)
-            ? $basePath
-            : __DIR__.'/../../'.$stub;
+        return 'Services';
     }
 }

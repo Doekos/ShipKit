@@ -3,7 +3,7 @@
 ShipKit is a small helper package to help you ship Laravel apps faster and more consistently. It provides:
 
 - Curated configuration toggles applied at boot (safe-by-default production settings)
-- Artisan generators for Actions and DTOs with opinionated stubs
+- Artisan generators for Actions, DTOs, Pipes, Pipelines, and Services with opinionated stubs
 - Simple commands to publish Pint, PHPStan, and Rector config files
 - A command to append useful Composer test scripts to your project
 - Publishable stubs and config so you can customize everything to your taste
@@ -11,8 +11,8 @@ ShipKit is a small helper package to help you ship Laravel apps faster and more 
 ## Requirements
 - PHP: >= 8.4
 - Laravel: 12.x (auto-discovered service provider)
-- PHPStan
-- Rector
+- PHPStan (optional)
+- Rector (optional)
 
 ## Installation
 Install via Composer:
@@ -49,10 +49,18 @@ These “configurables” run automatically during application boot. You can ena
   - Calls Model::unguard() to allow mass assignment for all models.
   - Toggle: Shipkit\Configurables\Unguard::class => false
 
+- Make Action generator availability (enabled by default)
+  - Controls whether the make:action command is registered.
+  - Toggle: Shipkit\Configurables\MakeAction::class => true
+
+- Modular approach for generators (disabled by default)
+  - Enables the optional module-aware directory structure and requires the --module option on all generator commands.
+  - Toggle: Shipkit\Configurables\ModularApproach::class => false
+
 Update the booleans in config/shipkit.php to suit your needs.
 
 ## Artisan Generators
-ShipKit adds a couple of handy generators that use publishable stubs.
+ShipKit adds a couple of handy generators that use publishable stubs. All generator commands support an optional --module flag when the Modular Approach is enabled (see the next section).
 
 ### make:action
 Create an Action class under app/Actions. The name is normalized to end with "Action".
@@ -114,7 +122,6 @@ Publish pint.json to the project root.
 
 ```bash
 php artisan shipkit:pint --force
-# Optional: --backup to create pint.json.backup if pint.json exists
 ```
 
 ### shipkit:phpstan
@@ -168,6 +175,38 @@ To toggle configurables:
 ```bash
 php artisan vendor:publish --tag=shipkit-config
 ```
+
+## Modular Approach for Generators
+ShipKit supports an optional modular directory structure for all generator commands (Action, DTO, Pipe, Pipeline, Service).
+
+- Enable it by setting the following in config/shipkit.php:
+  - Shipkit\Configurables\ModularApproach::class => true
+- When enabled:
+  - You must pass --module=<ModuleName> to all make:action, make:dto, make:pipe, make:pipeline, and make:service commands.
+  - Classes are generated under App\Modules\\<ModuleName>\\<SubNamespace> and stored at app/Modules/<ModuleName>/<SubNamespace>/<ClassName>.php.
+  - The <ModuleName> is normalized to StudlyCase (e.g., user_management => UserManagement).
+- When disabled (default):
+  - The --module option is not allowed and the command will exit with an error if provided.
+  - Classes are generated under the conventional namespaces (e.g., App\\Actions, App\\DTOs, etc.).
+
+### Examples
+
+```bash
+# Modular enabled (set Shipkit\Configurables\ModularApproach::class => true in config/shipkit.php)
+php artisan make:action CreateUser --module=UserManagement
+# => App\Modules\UserManagement\Actions\CreateUserAction
+#    app/Modules/UserManagement/Actions/CreateUserAction.php
+
+php artisan make:dto User --module=Billing
+# => App\Modules\Billing\DTOs\UserDTO
+#    app/Modules/Billing/DTOs/UserDTO.php
+```
+
+Behavioral safeguards:
+- If modular is enabled but you omit --module, the command exits with an error: "The --module option is required when modular approach is enabled."
+- If modular is disabled and you pass --module, the command exits with an error: "Modular approach is disabled; remove the --module option."
+
+Your published stubs (via shipkit-stubs) are still respected regardless of modular settings.
 
 ## Contributing
 PRs and issues are welcome. Please run the provided QA scripts (composer test and composer fix) before submitting.

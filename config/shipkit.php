@@ -63,4 +63,18 @@ return [
     */
 
     Shipkit\Configurables\Unguard::class => false,
+
+    /*
+     |--------------------------------------------------------------------------
+     | Modular Approach
+     |--------------------------------------------------------------------------
+     |
+     | This option allows you to enable the modular approach
+     | for your application. When enabled, the framework
+     | will encourage you to structure your application
+     | in a modular way.
+     |
+     */
+
+    Shipkit\Configurables\ModularApproach::class => false,
 ];

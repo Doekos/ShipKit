@@ -23,6 +23,7 @@ final class ShipkitServiceProvider extends BaseServiceProvider
         Configurables\ProhibitDestructiveCommands::class,
         Configurables\ShouldBeStrict::class,
         Configurables\Unguard::class,
+        Configurables\ModularApproach::class,
     ];
 
     /**
